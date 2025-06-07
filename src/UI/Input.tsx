@@ -1,4 +1,4 @@
-interface Iprops extends React.InputHTMLAttributes<HTMLInputElement> {}
+type Iprops = React.InputHTMLAttributes<HTMLInputElement>
 
 const Input = ({ ...rest }: Iprops) => {
   return (

@@ -1,14 +1,29 @@
-import { useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import "./App.css";
 import CustomBtn from "./components/CustomBtn";
 import CustomCard from "./components/CustomCard";
 import { formInputsList, productList } from "./data";
 import Modal from "./UI/Modal";
 import Input from "./UI/Input";
+import type { IProduct } from "./interfaces";
 
 function App() {
+  // states
   const [isOpen, setIsOpen] = useState(false);
-
+  const [newProduct, setNewProduct] = useState<IProduct>({
+    id: "",
+    title: "",
+    description: "",
+    imageURL: "",
+    price: "",
+    colors: [],
+    category: {
+      name: "",
+      imageURL: "",
+    },
+  });
+console.log(newProduct);
+  //  handler
   function open() {
     setIsOpen(true);
   }
@@ -16,6 +31,11 @@ function App() {
   function close() {
     setIsOpen(false);
   }
+
+  const onChangeHandler = (e:ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    setNewProduct({ ...newProduct, [name]: value });
+  };
 
   const RenderProduct = productList.map((product) => (
     <CustomCard
@@ -32,7 +52,13 @@ function App() {
   const RenderFormInputs = formInputsList.map((input) => (
     <div className="flex flex-col mb-3" key={input.id}>
       <label htmlFor={input.id}>{input.label}</label>
-      <Input type={input.type} id={input.id} name={input.name} />
+      <Input
+        type={input.type}
+        id={input.id}
+        name={input.name}
+        onChange={onChangeHandler}
+        value={newProduct[input.name]}
+      />
     </div>
   ));
   return (
