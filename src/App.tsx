@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import "./App.css";
 import CustomBtn from "./components/CustomBtn";
 import CustomCard from "./components/CustomCard";
@@ -6,10 +6,18 @@ import { formInputsList, productList } from "./data";
 import Modal from "./UI/Modal";
 import Input from "./UI/Input";
 import type { IProduct } from "./interfaces";
+import { productValidation } from "./validation";
+import ErrorMsg from "./components/ErrorMsg";
 
 function App() {
   // states
   const [isOpen, setIsOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState({
+    title: "",
+    description: "",
+    imageURL: "",
+    price: "",
+  });
   const [newProduct, setNewProduct] = useState<IProduct>({
     id: "",
     title: "",
@@ -22,7 +30,8 @@ function App() {
       imageURL: "",
     },
   });
-console.log(newProduct);
+  console.log(newProduct);
+
   //  handler
   function open() {
     setIsOpen(true);
@@ -32,10 +41,46 @@ console.log(newProduct);
     setIsOpen(false);
   }
 
-  const onChangeHandler = (e:ChangeEvent<HTMLInputElement>) => {
+  const onCancel = () => {
+    setNewProduct({
+      id: "",
+      title: "",
+      description: "",
+      imageURL: "",
+      price: "",
+      colors: [],
+      category: {
+        name: "",
+        imageURL: "",
+      },
+    });
+    close();
+  };
+  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setNewProduct({ ...newProduct, [name]: value });
+    setErrorMsg({ ...errorMsg, [name]: "" });
   };
+
+  function onSubmitHandler(event: FormEvent<HTMLFormElement>): void {
+    event.preventDefault();
+    const errors = productValidation({
+      title: newProduct.title,
+      description: newProduct.description,
+      imageURL: newProduct.imageURL,
+      price: newProduct.price,
+    });
+    <ErrorMsg msg={errors.title} />;
+    const hasErrMsg =
+      Object.values(errors).some((values) => values === "") &&
+      Object.values(errors).every((values) => values === "");
+    console.log(hasErrMsg);
+    if (!hasErrMsg) {
+      setErrorMsg(errors);
+      return;
+    }
+    console.log("send data to api");
+  }
 
   const RenderProduct = productList.map((product) => (
     <CustomCard
@@ -59,8 +104,10 @@ console.log(newProduct);
         onChange={onChangeHandler}
         value={newProduct[input.name]}
       />
+      <ErrorMsg msg={errorMsg[input.name]} />
     </div>
   ));
+
   return (
     <main className="container mx-auto mt-5">
       <div dir="rtl" className="w-full mr-20">
@@ -72,7 +119,7 @@ console.log(newProduct);
         />
       </div>
       <Modal isOpen={isOpen} closeModal={close} title="Add New Produt">
-        <form action="">
+        <form action="" onSubmit={onSubmitHandler}>
           {RenderFormInputs}
           <div className="flex justify-between gap-5">
             <CustomBtn title="Submit" type={true} className="w-full " />
@@ -80,7 +127,7 @@ console.log(newProduct);
               title="Close"
               type={true}
               className="bg-gray-600 w-full"
-              onClick={() => close()}
+              onClick={onCancel}
             />
           </div>
         </form>
