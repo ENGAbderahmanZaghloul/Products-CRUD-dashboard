@@ -15,9 +15,9 @@ function App() {
   // states
   const [isOpen, setIsOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isOpenConfirmModal, setIsOpenConfirmModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
   const [tempColor, setTempColor] = useState<string[]>([]);
-  // console.log(tempColor);
   const [errorMsg, setErrorMsg] = useState({
     title: "",
     description: "",
@@ -36,7 +36,6 @@ function App() {
       imageURL: "",
     },
   });
-  // console.log(newProduct);
   const [productClicked, setproductClicked] = useState<IProduct>({
     title: "",
     description: "",
@@ -48,7 +47,6 @@ function App() {
       imageURL: "",
     },
   });
-  console.log(productClicked);
   const [productClickedIdx, setproductClickedIdx] = useState<number>(0);
   const [addedProduct, setAddedProduct] = useState<IProduct[]>(productList);
   console.log(productClickedIdx);
@@ -66,6 +64,18 @@ function App() {
 
   function EditClose() {
     setIsEditOpen(false);
+  }
+
+  function removeOpen() {
+    setIsOpenConfirmModal(true);
+  }
+  function removeClose() {
+    setIsOpenConfirmModal(false);
+  }
+  function removeProductHandler() {
+    const filtered = addedProduct.filter(product => product.id !== productClicked.id )
+    removeClose()
+    setAddedProduct(filtered)
   }
 
   const onCancel = () => {
@@ -144,7 +154,7 @@ function App() {
       imageURL: productClicked.imageURL,
       price: productClicked.price,
       // tempColor: productClicked.colors,
-      tempColor: [...productClicked.colors, ...tempColor]
+      tempColor: [...productClicked.colors, ...tempColor],
     });
     // <ErrorMsg msg={errors.title} />;
     const hasErrMsg =
@@ -157,7 +167,10 @@ function App() {
     }
 
     const updatedProduct = [...addedProduct];
-    updatedProduct[productClickedIdx] = {...productClicked ,colors:tempColor.concat(productClicked.colors) };
+    updatedProduct[productClickedIdx] = {
+      ...productClicked,
+      colors: tempColor.concat(productClicked.colors),
+    };
     setAddedProduct(updatedProduct);
     setproductClicked({
       title: "",
@@ -182,6 +195,7 @@ function App() {
       key={product.id}
       setproductClicked={setproductClicked}
       EditOpen={EditOpen}
+      removeOpen={removeOpen}
       setproductClickedIdx={setproductClickedIdx}
       idx={index}
     />
@@ -239,23 +253,21 @@ function App() {
   };
 
   const RenderCircleColor = colors.map((color) => (
-  
-      <CircleColor
-        color={color}
-        key={color}
-        onClick={() => {
-          if (tempColor.includes(color)) {
-            setTempColor((prev) => prev.filter((item) => item !== color));
-            return;
-          }
-          if (productClicked.colors.includes(color)) {
-            setTempColor((prev) => prev.filter((item) => item !== color));
-            return;
-          }
-          setTempColor((prev) => [...prev, color]);
-        }}
-      />
-    
+    <CircleColor
+      color={color}
+      key={color}
+      onClick={() => {
+        if (tempColor.includes(color)) {
+          setTempColor((prev) => prev.filter((item) => item !== color));
+          return;
+        }
+        if (productClicked.colors.includes(color)) {
+          setTempColor((prev) => prev.filter((item) => item !== color));
+          return;
+        }
+        setTempColor((prev) => [...prev, color]);
+      }}
+    />
   ));
   return (
     <main className="container mx-auto mt-5">
@@ -317,10 +329,9 @@ function App() {
           )}
           {rendereditproduct("imageURL", "Product ImageURL", "url", "imageURL")}
           {rendereditproduct("price", "Product Price", "text", "price")}
-          
+
           <div className="flex gap-1 my-3 space-x-2 flex-wrap">
             {RenderCircleColor}
-            
           </div>
           {tempColor.concat(productClicked.colors).map((color, index) => (
             <span
@@ -333,7 +344,9 @@ function App() {
           ))}
           <SelectMenu
             selected={productClicked.category}
-            setSelected={value => setproductClicked({...productClicked , category:value})}
+            setSelected={(value) =>
+              setproductClicked({ ...productClicked, category: value })
+            }
           />
           <div className="flex justify-between gap-5 mt-4">
             <CustomBtn title="Submit" type={true} className="w-full " />
@@ -345,6 +358,47 @@ function App() {
             />
           </div>
         </form>
+      </Modal>
+      {/* delete modal */}
+      <Modal
+        isOpen={isOpenConfirmModal}
+        closeModal={close}
+        title="Are you sure you want to remove this Product from your Store? "
+      >
+        <p>
+          Deleting this product will remove it permanently from your inventory.
+          Any associated data, sales history, and other related information will
+          also be deleted. Please make sure this is the intended action.
+        </p>
+        <div className="flex justify-between gap-5 mt-4">
+          <CustomBtn
+            title="remove"
+            type={false}
+            className="w-full "
+            onClick={removeProductHandler}
+          />
+          <CustomBtn
+            title="cancel"
+            type={true}
+            className="bg-gray-600 w-full"
+            onClick={removeClose}
+          />
+        </div>
+        {/* <div className="flex items-center space-x-3">
+          <Button
+            className="bg-[#c2344d] hover:bg-red-800"
+            onClick={removeProductHandler}
+          >
+            Yes, remove
+          </Button>
+          <Button
+            type="button"
+            className="bg-[#f5f5fa] hover:bg-gray-300 !text-black"
+            onClick={closeConfirmModal}
+          >
+            Cancel
+          </Button>
+        </div> */}
       </Modal>
       <div className="mx-5 my-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 ">
         {RenderProduct}

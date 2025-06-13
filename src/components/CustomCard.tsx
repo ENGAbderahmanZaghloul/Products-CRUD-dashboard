@@ -15,6 +15,7 @@ interface Iprops {
   newProduct: IProduct;
   setproductClicked: (newProduct: IProduct) => void;
   EditOpen: (value: boolean) => void;
+  removeOpen: (value: boolean) => void;
   setproductClickedIdx: (value: number) => void;
   idx: number;
 }
@@ -23,6 +24,7 @@ const CustomCard = ({
   newProduct,
   setproductClicked,
   EditOpen,
+  removeOpen,
   setproductClickedIdx,
   idx,
 }: Iprops) => {
@@ -37,6 +39,11 @@ const CustomCard = ({
     EditOpen(true);
     setproductClickedIdx(idx);
   };
+
+  const onRemove = () =>{
+    setproductClicked(newProduct);  //علشان اتحكم ف نفس المنتج ال بضغط عليه اخلي ال state  بتاع الكليك تخزن المنتج الممضغوط
+    removeOpen(true)
+  }
   return (
     <section className="border py-2 px-2 max-w-sm min-w-2xs md:max-w-lg mx-auto sm:mx-0 ">
       <CustomImage imageURL={imageURL} alt="lapTop img" />
@@ -75,7 +82,7 @@ const CustomCard = ({
           className="!w-full"
           onClick={onEdit}
         />
-        <CustomBtn title="Destory" type={false} className="!w-full" />
+        <CustomBtn title="Remove" type={false} className="!w-full" onClick={onRemove} />
       </div>
     </section>
   );
