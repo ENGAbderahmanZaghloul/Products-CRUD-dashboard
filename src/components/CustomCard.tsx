@@ -13,14 +13,30 @@ interface Iprops {
   // imgSrc: string;
   // colors: string[];
   newProduct: IProduct;
+  setproductClicked: (newProduct: IProduct) => void;
+  EditOpen: (value: boolean) => void;
+  setproductClickedIdx: (value: number) => void;
+  idx: number;
 }
 
-const CustomCard = ({ newProduct }: Iprops) => {
+const CustomCard = ({
+  newProduct,
+  setproductClicked,
+  EditOpen,
+  setproductClickedIdx,
+  idx,
+}: Iprops) => {
   const { title, description, imageURL, price, colors, category } = newProduct;
 
   const RenderCircleColor = colors.map((color) => (
     <CircleColor color={color} key={color} />
   ));
+
+  const onEdit = () => {
+    setproductClicked(newProduct);
+    EditOpen(true);
+    setproductClickedIdx(idx);
+  };
   return (
     <section className="border py-2 px-2 max-w-sm min-w-2xs md:max-w-lg mx-auto sm:mx-0 ">
       <CustomImage imageURL={imageURL} alt="lapTop img" />
@@ -29,17 +45,22 @@ const CustomCard = ({ newProduct }: Iprops) => {
         <p className="text-[12px]">{textSlicer(description)}</p>
       </div>
       <div className="flex gap-1 my-3 space-x-2 flex-wrap">
-        {colors && colors.length > 0 ? (
+        {/* { colors.length > 0 ? (
           RenderCircleColor
         ) : (
           <div className="h-4">no color avilable</div>
+        )} */}
+        {!colors.length ? (
+          <p className="min-h-[20px]">Not available colors!</p>
+        ) : (
+          RenderCircleColor
         )}
       </div>
       <div className="my-3 flex justify-between">
         <p className="text-blue-600 font-semibold">$ {price}</p>
         <div className="flex gap-1.5">
           <CustomImage
-            imageURL="/imgs/laptob.jpg"
+            imageURL={category.imageURL}
             alt="lapTop img"
             className="rounded !w-8 !h-8"
           />
@@ -48,7 +69,12 @@ const CustomCard = ({ newProduct }: Iprops) => {
       </div>
 
       <div className="flex justify-between gap-3">
-        <CustomBtn title="Edit" type={true} className="!w-full" />
+        <CustomBtn
+          title="Edit"
+          type={true}
+          className="!w-full"
+          onClick={onEdit}
+        />
         <CustomBtn title="Destory" type={false} className="!w-full" />
       </div>
     </section>
