@@ -6,12 +6,6 @@ import CustomBtn from "./CustomBtn";
 import CustomImage from "./CustomImage";
 
 interface Iprops {
-  // title: string;
-  // para: string;
-  // category: string;
-  // price: number;
-  // imgSrc: string;
-  // colors: string[];
   newProduct: IProduct;
   setproductClicked: (newProduct: IProduct) => void;
   EditOpen: (value: boolean) => void;
@@ -52,11 +46,6 @@ const CustomCard = ({
         <p className="text-[12px]">{textSlicer(description)}</p>
       </div>
       <div className="flex gap-1 my-3 space-x-2 flex-wrap">
-        {/* { colors.length > 0 ? (
-          RenderCircleColor
-        ) : (
-          <div className="h-4">no color avilable</div>
-        )} */}
         {!colors.length ? (
           <p className="min-h-[20px]">Not available colors!</p>
         ) : (
