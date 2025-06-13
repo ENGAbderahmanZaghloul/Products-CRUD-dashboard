@@ -11,6 +11,8 @@ import ErrorMsg from "./components/ErrorMsg";
 import CircleColor from "./components/CircleColor";
 import { v4 as uuid } from "uuid";
 import SelectMenu from "./UI/SelectMenu";
+import toast, { Toaster } from "react-hot-toast";
+
 function App() {
   // states
   const [isOpen, setIsOpen] = useState(false);
@@ -73,9 +75,18 @@ function App() {
     setIsOpenConfirmModal(false);
   }
   function removeProductHandler() {
-    const filtered = addedProduct.filter(product => product.id !== productClicked.id )
-    removeClose()
-    setAddedProduct(filtered)
+    const filtered = addedProduct.filter(
+      (product) => product.id !== productClicked.id
+    );
+    removeClose();
+    setAddedProduct(filtered);
+    toast("Product has been deleted successfully!", {
+      icon: "👏",
+      style: {
+        backgroundColor: "#c2344d",
+        color: "white",
+      },
+    });
   }
 
   const onCancel = () => {
@@ -384,22 +395,8 @@ function App() {
             onClick={removeClose}
           />
         </div>
-        {/* <div className="flex items-center space-x-3">
-          <Button
-            className="bg-[#c2344d] hover:bg-red-800"
-            onClick={removeProductHandler}
-          >
-            Yes, remove
-          </Button>
-          <Button
-            type="button"
-            className="bg-[#f5f5fa] hover:bg-gray-300 !text-black"
-            onClick={closeConfirmModal}
-          >
-            Cancel
-          </Button>
-        </div> */}
       </Modal>
+      <Toaster position="bottom-left" reverseOrder={false} />
       <div className="mx-5 my-8 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 ">
         {RenderProduct}
       </div>
