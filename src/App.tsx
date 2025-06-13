@@ -122,7 +122,7 @@ function App() {
       description: newProduct.description,
       imageURL: newProduct.imageURL,
       price: newProduct.price,
-      tempColor: newProduct.colors,
+      tempColor: tempColor,
     });
     // <ErrorMsg msg={errors.title} />;
     const hasErrMsg =
@@ -153,6 +153,14 @@ function App() {
       category: {
         name: "",
         imageURL: "",
+      },
+    });
+    setTempColor([]);
+    toast("Product has been added successfully!", {
+      icon: "✅",
+      style: {
+        backgroundColor: "#155dfc",
+        color: "white",
       },
     });
     close();
@@ -195,7 +203,13 @@ function App() {
       },
     });
     setTempColor([]);
-
+    toast("Product has been edited successfully!", {
+      icon: "✅",
+      style: {
+        backgroundColor: "#155dfc",
+        color: "white",
+      },
+    });
     EditClose();
   }
 
