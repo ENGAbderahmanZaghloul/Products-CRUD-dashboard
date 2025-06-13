@@ -2,16 +2,19 @@ import { type ChangeEvent, type FormEvent, useState } from "react";
 import "./App.css";
 import CustomBtn from "./components/CustomBtn";
 import CustomCard from "./components/CustomCard";
-import { formInputsList, productList } from "./data";
+import { colors, formInputsList, productList } from "./data";
 import Modal from "./UI/Modal";
 import Input from "./UI/Input";
 import type { IProduct } from "./interfaces";
 import { productValidation } from "./validation";
 import ErrorMsg from "./components/ErrorMsg";
-
+import CircleColor from "./components/CircleColor";
+import { v4 as uuid } from "uuid";
 function App() {
   // states
   const [isOpen, setIsOpen] = useState(false);
+  const [tempColor, setTempColor] = useState<string[]>([]);
+  console.log(tempColor);
   const [errorMsg, setErrorMsg] = useState({
     title: "",
     description: "",
@@ -31,6 +34,8 @@ function App() {
     },
   });
   console.log(newProduct);
+
+  const [addedProduct, setAddedProduct] = useState<IProduct[]>(productList);
 
   //  handler
   function open() {
@@ -79,19 +84,28 @@ function App() {
       setErrorMsg(errors);
       return;
     }
-    console.log("send data to api");
+    setAddedProduct((prev) => [
+      { ...newProduct, id: uuid(), colors: tempColor },
+      ...prev,
+    ]);
+    setNewProduct({
+      id: "",
+      title: "",
+      description: "",
+      imageURL: "",
+      price: "",
+      colors: [],
+      category: {
+        name: "",
+        imageURL: "",
+      },
+    });
+    close();
   }
 
-  const RenderProduct = productList.map((product) => (
-    <CustomCard
-      key={product.id}
-      imgSrc={product.imageURL}
-      title={product.title}
-      para={product.description}
-      colors={product.colors}
-      category={product.category.name}
-      price={0}
-    />
+  /*       Render      */
+  const RenderProduct = addedProduct.map((product) => (
+    <CustomCard newProduct={product} />
   ));
 
   const RenderFormInputs = formInputsList.map((input) => (
@@ -108,6 +122,19 @@ function App() {
     </div>
   ));
 
+  const RenderCircleColor = colors.map((color) => (
+    <CircleColor
+      color={color}
+      key={color}
+      onClick={() => {
+        if (tempColor.includes(color)) {
+          setTempColor((prev) => prev.filter((item) => item !== color));
+          return;
+        }
+        setTempColor((prev) => [...prev, color]);
+      }}
+    />
+  ));
   return (
     <main className="container mx-auto mt-5">
       <div dir="rtl" className="w-full mr-20">
@@ -121,7 +148,20 @@ function App() {
       <Modal isOpen={isOpen} closeModal={close} title="Add New Produt">
         <form action="" onSubmit={onSubmitHandler}>
           {RenderFormInputs}
-          <div className="flex justify-between gap-5">
+          <div className="flex gap-1 my-3 space-x-2 flex-wrap">
+            {RenderCircleColor}
+          </div>
+          {tempColor &&
+            tempColor.map((color, index) => (
+              <span
+                key={index}
+                className="p-1 mr-1 mb-1 text-xs rounded-md text-white inline-block "
+                style={{ backgroundColor: color }}
+              >
+                {color}
+              </span>
+            ))}
+          <div className="flex justify-between gap-5 mt-4">
             <CustomBtn title="Submit" type={true} className="w-full " />
             <CustomBtn
               title="Close"
